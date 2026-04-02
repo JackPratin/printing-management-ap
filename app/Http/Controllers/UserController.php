@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -19,9 +20,23 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        $user = User::create([
+            'first_name'  => $data['first_name'],
+            'last_name'   => $data['last_name'],
+            'username'    => $data['username'],
+            'roles'       => $data['roles'] ?? null,
+            'permissions' => $data['permissions'] ?? null,
+            'password'    => bcrypt($data['password']),
+        ]);
+
+        return response()->json([
+            'message' => 'User created successfully',
+            'user'    => $user
+        ], 201);
     }
 
     /**
